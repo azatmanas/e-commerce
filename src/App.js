@@ -1,34 +1,21 @@
-import Directory from "./component/categories/directory";
-const App = () => {
-  const categories = [
-    {
-      id: 1,
-      title: "hats",
-      imageUrl: "https://i.ibb.co/cvpntL1/hats.png",
-    },
-    {
-      id: 2,
-      title: "jackets",
-      imageUrl: "https://i.ibb.co/px2tCc3/jackets.png",
-    },
-    {
-      id: 3,
-      title: "sneakers",
-      imageUrl: "https://i.ibb.co/0jqHpnp/sneakers.png",
-    },
-    {
-      id: 4,
-      title: "womens",
-      imageUrl: "https://i.ibb.co/GCCdy8t/womens.png",
-    },
-    {
-      id: 5,
-      title: "mens",
-      imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
-    },
-  ];
+import { Routes, Route } from "react-router-dom";
 
-  return <Directory categories={categories} />;
+import Home from "./component/routes/home";
+import Navigation from "./component/routes/navigation/navigation";
+import Authentication from "./component/routes/Authentication/Authentication";
+import Shop from "./component/routes/shop/shop";
+import Checkout from "./component/routes/checkout/checkout";
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigation />}>
+        <Route index element={<Home />} />
+        <Route path="shop/*" element={<Shop />} />
+        <Route path="auth" element={<Authentication />} />
+        <Route path="checkout" element={<Checkout />} />
+      </Route>
+    </Routes>
+  );
 };
 
 export default App;
