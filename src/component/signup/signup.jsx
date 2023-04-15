@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import FormInput from "./../formInput/formInput";
 import Button from "../button/button";
-import {
-  createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
-} from "../../utils/firebase/firebase.utils";
-
 import { SignUpContainer } from "./signup.style";
+
+import { signUpStart } from "../../store/user/user.action";
 
 const defaultFormFields = {
   displayName: "",
@@ -15,9 +13,10 @@ const defaultFormFields = {
   confirmPassword: "",
 };
 
-const SignUp = () => {
+const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
+  const dispatch = useDispatch();
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -32,11 +31,7 @@ const SignUp = () => {
     }
 
     try {
-      const { user } = await createAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      await createUserDocumentFromAuth(user, { displayName });
+      dispatch(signUpStart(email, password, displayName));
       resetFormFields();
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
@@ -49,6 +44,7 @@ const SignUp = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     setFormFields({ ...formFields, [name]: value });
   };
 
@@ -83,6 +79,7 @@ const SignUp = () => {
           name="password"
           value={password}
         />
+
         <FormInput
           label="Confirm Password"
           type="password"
@@ -91,11 +88,10 @@ const SignUp = () => {
           name="confirmPassword"
           value={confirmPassword}
         />
-        <Button buttonType="inverted" type="submit">
-          Sign Up
-        </Button>
+        <Button type="submit">Sign Up</Button>
       </form>
     </SignUpContainer>
   );
 };
-export default SignUp;
+
+export default SignUpForm;

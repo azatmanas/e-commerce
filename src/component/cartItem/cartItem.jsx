@@ -1,8 +1,7 @@
 import { CartItemContainer, ItemDetails } from "./cartItem.style.js";
 
 const CartItem = ({ cartItem }) => {
-  const { imageUrl, price, name, quantity } = cartItem;
-
+  const { name, imageUrl, price, quantity } = cartItem;
   return (
     <CartItemContainer>
       <img src={imageUrl} alt={`${name}`} />
