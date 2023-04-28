@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -9,7 +9,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { store, persistor } from "./store/store";
 import { stripePromise } from "./utils/stripe/stripe";
-import "./index.scss";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

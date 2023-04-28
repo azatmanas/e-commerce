@@ -9,6 +9,11 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11",
+    "@types/styled-components": "^5.1.26",
     "dotenv": "^16.0.3",
     "firebase": "^9.17.1",
     "netlify": "^13.1.3",
@@ -17,7 +22,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
@@ -28,6 +33,8 @@
     "saas": "^1.0.0",
     "stripe": "^12.0.0",
     "styled-components": "^5.3.9",
+    "typed-redux-saga": "^1.5.0",
+    "typescript": "^3.9.10",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -56,7 +63,7 @@
   },
   "devDependencies": {
     "css-loader": "^6.7.3",
-    "node-sass": "^7.0.3",
+    "node-sass": "^8.0.0",
     "sass-loader": "^13.2.0",
     "style-loader": "^3.3.1"
   }
