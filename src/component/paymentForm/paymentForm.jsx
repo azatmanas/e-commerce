@@ -1,5 +1,4 @@
-import { useState, FormEvent } from "react";
-
+import { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 import { StripeCardElement } from "@stripe/stripe-js";
@@ -16,10 +15,6 @@ import {
   PaymentButton,
 } from "./paymentStyle";
 
-const ifValidCardElement = (
-  card: StripeCardElement | null
-): card is StripeCardElement => card !== null;
-
 const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
@@ -27,7 +22,7 @@ const PaymentForm = () => {
   const currentUser = useSelector(selectCurrentUser);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-  const paymentHandler = async (e: FormEvent<HTMLFormElement>) => {
+  const paymentHandler = async (e) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
@@ -50,7 +45,7 @@ const PaymentForm = () => {
 
     const cardDetails = elements.getElement(CardElement);
 
-    if (!ifValidCardElement(cardDetails)) return;
+    if (cardDetails) return;
 
     const paymentResult = await stripe.confirmCardPayment(client_secret, {
       payment_method: {
