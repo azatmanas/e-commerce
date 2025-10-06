@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { getApps, initializeApp } from "firebase/app";
 import {
   getAuth,
   signInWithRedirect,
@@ -8,11 +8,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  NextOrObserver,
-  User,
 } from "firebase/auth";
-
-import { Category } from "../../store/categories/categories.types";
 
 import {
   getFirestore,
@@ -23,7 +19,6 @@ import {
   writeBatch,
   query,
   getDocs,
-  QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -35,33 +30,29 @@ const firebaseConfig = {
   appId: "1:640668255170:web:f34425eb13d16443428c5b",
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
 const googleProvider = new GoogleAuthProvider();
-
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
 export const auth = getAuth();
+export const db = getFirestore();
+
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
-export const db = getFirestore();
-
-export type ObjectToAdd = {
-  title: string;
-};
-
-export const addCollectionAndDocuments = async <T extends ObjectToAdd>(
-  collectionKey: string,
-  objectsToAdd: T[]
-): Promise<void> => {
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
-
   objectsToAdd.forEach((object) => {
     const docRef = doc(collectionRef, object.title.toLowerCase());
     batch.set(docRef, object);
@@ -71,30 +62,18 @@ export const addCollectionAndDocuments = async <T extends ObjectToAdd>(
   console.log("done");
 };
 
-export const getCategoriesAndDocuments = async (): Promise<Category[]> => {
+export const getCategoriesAndDocuments = async () => {
   const collectionRef = collection(db, "categories");
   const q = query(collectionRef);
 
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(
-    (docSnapshot) => docSnapshot.data() as Category
-  );
-};
-
-export type AdditionalInformation = {
-  displayName?: string;
-};
-
-export type UserData = {
-  createdAt: Date;
-  displayName: string;
-  email: string;
+  return querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
 };
 
 export const createUserDocumentFromAuth = async (
-  userAuth: User,
-  additionalInformation = {} as AdditionalInformation
-): Promise<void | QueryDocumentSnapshot<UserData>> => {
+  userAuth,
+  additionalInformation = {}
+) => {
   if (!userAuth) return;
 
   const userDocRef = doc(db, "users", userAuth.uid);
@@ -117,22 +96,16 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userSnapshot as QueryDocumentSnapshot<UserData>;
+  return userSnapshot;
 };
 
-export const createAuthUserWithEmailAndPassword = async (
-  email: string,
-  password: string
-) => {
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
   return await createUserWithEmailAndPassword(auth, email, password);
 };
 
-export const signInAuthUserWithEmailAndPassword = async (
-  email: string,
-  password: string
-) => {
+export const signInAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
   return await signInWithEmailAndPassword(auth, email, password);
@@ -140,10 +113,10 @@ export const signInAuthUserWithEmailAndPassword = async (
 
 export const signOutUser = async () => await signOut(auth);
 
-export const onAuthStateChangedListener = (callback: NextOrObserver<User>) =>
+export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
 
-export const getCurrentUser = (): Promise<User | null> => {
+export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       auth,
@@ -155,3 +128,5 @@ export const getCurrentUser = (): Promise<User | null> => {
     );
   });
 };
+
+export { firebaseApp };
