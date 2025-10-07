@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useDispatch } from "react-redux";
 
 import { Routes, Route } from "react-router-dom";
@@ -6,17 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import Spinner from "./component/spinner/spinner";
 import { checkUserSession } from "./store/user/user.action";
 import { GlobalStyle } from "./global.style";
-
-const Shop = lazy(() => import("./component/routes/shop/shop"));
-const Checkout = lazy(() => import("./component/routes/checkout/checkout"));
-
-const Navigation = lazy(() =>
-  import("./component/routes/navigation/navigation")
-);
-const Authentication = lazy(() =>
-  import("./component/routes/Authentication/Authentication")
-);
-const Home = lazy(() => import("./component/routes/home"));
+import { Home, Shop, Checkout, Navigation, Authentication } from "./lazy";
 
 const App = () => {
   const dispatch = useDispatch();
