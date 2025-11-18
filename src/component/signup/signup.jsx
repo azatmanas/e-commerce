@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthErrorCodes } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FormInput from "../formInput/formInput";
 import Button from "../button/button";
 import { SignUpContainer } from "./signup.style";
@@ -19,28 +19,27 @@ const SignUpForm = () => {
   const { displayName, email, password, confirmPassword } = formFields;
   const dispatch = useDispatch();
 
+  const error = useSelector((state) => state.user.error);
+
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("passwords do not match");
+      alert("Passwords do not match");
       return;
     }
 
-    try {
-      dispatch(signUpStart(email, password, displayName));
-      resetFormFields();
-    } catch (error) {
-      if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
-        alert("Cannot create user, email already in use");
-      } else {
-        console.log("user creation encountered an error", error);
-      }
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
     }
+
+    dispatch(signUpStart(email, password, displayName));
+    resetFormFields();
   };
 
   const handleChange = (event) => {
@@ -48,6 +47,21 @@ const SignUpForm = () => {
 
     setFormFields({ ...formFields, [name]: value });
   };
+
+  useEffect(() => {
+    if (!error) return;
+
+    switch (error.code) {
+      case AuthErrorCodes.EMAIL_EXISTS:
+        alert("Cannot create user, email already in use");
+        break;
+      case AuthErrorCodes.WEAK_PASSWORD:
+        alert("Password is too weak (min 6 characters)");
+        break;
+      default:
+        alert(`Signup error: ${error.message}`);
+    }
+  }, [error]);
 
   return (
     <SignUpContainer>
