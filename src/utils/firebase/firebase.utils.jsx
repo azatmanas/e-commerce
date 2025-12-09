@@ -81,7 +81,8 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userDocRef;
+  // IMPORTANT: return the DocumentSnapshot so callers can call .data()
+  return await getDoc(userDocRef);
 };
 
 export const signOutUser = async () => await signOut(auth);
