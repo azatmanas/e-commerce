@@ -1,11 +1,12 @@
-import SignUp from "../../signup/signup";
-import SignForm from "../../signForm/signForm";
+import SignInForm from "../../SignInForm/SignInForm";
+import SignUpForm from "../../SignUpForm/SignUpForm";
 import { AuthenticationContainer } from "./Authentication.style";
+
 const Authentication = () => {
   return (
     <AuthenticationContainer>
-      <SignForm />
-      <SignUp />
+      <SignInForm />
+      <SignUpForm />
     </AuthenticationContainer>
   );
 };

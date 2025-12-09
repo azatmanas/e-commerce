@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import { AuthErrorCodes } from "firebase/auth";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+
 import FormInput from "../formInput/formInput";
 import Button from "../button/button";
-import { SignUpContainer } from "./signup.style";
-
-import { signUpStart } from "../../store/user/user.action";
+import { SignInContainer, ButtonsContainer } from "./SignUpForm.style";
+import { USER_ACTION_TYPES } from "../../store/user/user.types";
 
 const defaultFormFields = {
   displayName: "",
@@ -15,56 +14,35 @@ const defaultFormFields = {
 };
 
 const SignUpForm = () => {
+  const dispatch = useDispatch();
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
-  const dispatch = useDispatch();
 
-  const error = useSelector((state) => state.user.error);
+  const resetFormFields = () => setFormFields(defaultFormFields);
 
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormFields({ ...formFields, [name]: value });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      alert("Passwords do not match!");
       return;
     }
 
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters");
-      return;
-    }
+    dispatch({
+      type: USER_ACTION_TYPES.SIGN_UP_START,
+      payload: { email, password, displayName },
+    });
 
-    dispatch(signUpStart(email, password, displayName));
     resetFormFields();
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormFields({ ...formFields, [name]: value });
-  };
-
-  useEffect(() => {
-    if (!error) return;
-
-    switch (error.code) {
-      case AuthErrorCodes.EMAIL_EXISTS:
-        alert("Cannot create user, email already in use");
-        break;
-      case AuthErrorCodes.WEAK_PASSWORD:
-        alert("Password is too weak (min 6 characters)");
-        break;
-      default:
-        alert(`Signup error: ${error.message}`);
-    }
-  }, [error]);
-
   return (
-    <SignUpContainer>
+    <SignInContainer>
       <h2>Don't have an account?</h2>
       <span>Sign up with your email and password</span>
       <form onSubmit={handleSubmit}>
@@ -76,7 +54,6 @@ const SignUpForm = () => {
           name="displayName"
           value={displayName}
         />
-
         <FormInput
           label="Email"
           type="email"
@@ -85,7 +62,6 @@ const SignUpForm = () => {
           name="email"
           value={email}
         />
-
         <FormInput
           label="Password"
           type="password"
@@ -94,7 +70,6 @@ const SignUpForm = () => {
           name="password"
           value={password}
         />
-
         <FormInput
           label="Confirm Password"
           type="password"
@@ -103,9 +78,11 @@ const SignUpForm = () => {
           name="confirmPassword"
           value={confirmPassword}
         />
-        <Button type="submit">Sign Up</Button>
+        <ButtonsContainer>
+          <Button type="submit">Sign Up</Button>
+        </ButtonsContainer>
       </form>
-    </SignUpContainer>
+    </SignInContainer>
   );
 };
 

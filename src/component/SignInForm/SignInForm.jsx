@@ -3,11 +3,8 @@ import { useDispatch } from "react-redux";
 
 import FormInput from "../formInput/formInput";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button";
-import { SignInContainer, ButtonsContainer } from "./signForm.style";
-import {
-  googleSignInStart,
-  emailSignInStart,
-} from "../../store/user/user.action";
+import { SignUpContainer, ButtonsContainer } from "./SignInForm.style";
+import { USER_ACTION_TYPES } from "../../store/user/user.types";
 
 const defaultFormFields = {
   email: "",
@@ -19,33 +16,30 @@ const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
 
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-  };
+  const resetFormFields = () => setFormFields(defaultFormFields);
 
-  const signInWithGoogle = async () => {
-    dispatch(googleSignInStart());
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormFields({ ...formFields, [name]: value });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    try {
-      dispatch(emailSignInStart(email, password));
-      resetFormFields();
-    } catch (error) {
-      console.log("user sign in failed", error);
-    }
+    dispatch({
+      type: USER_ACTION_TYPES.EMAIL_SIGN_IN_START,
+      payload: { email, password },
+    });
+
+    resetFormFields();
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormFields({ ...formFields, [name]: value });
+  const signInWithGoogle = () => {
+    dispatch({ type: USER_ACTION_TYPES.GOOGLE_SIGN_IN_START });
   };
 
   return (
-    <SignInContainer>
+    <SignUpContainer>
       <h2>Already have an account?</h2>
       <span>Sign in with your email and password</span>
       <form onSubmit={handleSubmit}>
@@ -57,7 +51,6 @@ const SignInForm = () => {
           name="email"
           value={email}
         />
-
         <FormInput
           label="Password"
           type="password"
@@ -69,15 +62,15 @@ const SignInForm = () => {
         <ButtonsContainer>
           <Button type="submit">Sign In</Button>
           <Button
-            buttonType={BUTTON_TYPE_CLASSES.google}
             type="button"
+            buttonType={BUTTON_TYPE_CLASSES.google}
             onClick={signInWithGoogle}
           >
             Google Sign In
           </Button>
         </ButtonsContainer>
       </form>
-    </SignInContainer>
+    </SignUpContainer>
   );
 };
 

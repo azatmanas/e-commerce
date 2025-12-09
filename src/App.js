@@ -7,10 +7,11 @@ import Spinner from "./component/spinner/spinner";
 import { checkUserSession } from "./store/user/user.action";
 import { GlobalStyle } from "./global.style";
 import { Home, Shop, Checkout, Navigation, Authentication } from "./lazy";
+import Profile from "./component/profile/profile";
 
 const App = () => {
   const dispatch = useDispatch();
-  const currentuser = useSelector(selectCurrentUser);
+  const currentUser = useSelector(selectCurrentUser); // ✅ fixed casing
 
   useEffect(() => {
     dispatch(checkUserSession());
@@ -24,10 +25,17 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="shop/*" element={<Shop />} />
           <Route path="auth" element={<Authentication />} />
+
           <Route
             path="checkout"
             element={
-              currentuser ? <Checkout /> : <Navigate to="auth/" replace />
+              currentUser ? <Checkout /> : <Navigate to="/auth" replace />
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              currentUser ? <Profile /> : <Navigate to="/auth" replace />
             }
           />
         </Route>
