@@ -2,7 +2,7 @@ import { useEffect, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentUser } from "./store/user/user.selector";
 import { Routes, Route, Navigate } from "react-router-dom";
-
+import ProtectedRoute from "./component/routes/ProtectedRoute/ProtectedRoute";
 import Spinner from "./component/spinner/spinner";
 import { checkUserSession } from "./store/user/user.action";
 import { GlobalStyle } from "./global.style";
@@ -29,13 +29,17 @@ const App = () => {
           <Route
             path="checkout"
             element={
-              currentUser ? <Checkout /> : <Navigate to="/auth" replace />
+              <ProtectedRoute user={currentUser}>
+                <Checkout />{" "}
+              </ProtectedRoute>
             }
           />
           <Route
             path="profile"
             element={
-              currentUser ? <Profile /> : <Navigate to="/auth" replace />
+              <ProtectedRoute user={currentUser}>
+                <Profile />{" "}
+              </ProtectedRoute>
             }
           />
         </Route>
