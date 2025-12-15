@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-
 import FormInput from "../formInput/formInput";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button";
 import { SignUpContainer, ButtonsContainer } from "./SignInForm.style";
-import { USER_ACTION_TYPES } from "../../store/user/user.types";
+import {
+  emailSignInStart,
+  googleSignInStart,
+} from "../../store/user/user.action";
 
 const defaultFormFields = {
   email: "",
@@ -15,6 +17,7 @@ const SignInForm = () => {
   const dispatch = useDispatch();
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const [errors, setErrors] = useState({});
 
   const resetFormFields = () => setFormFields(defaultFormFields);
 
@@ -23,19 +26,27 @@ const SignInForm = () => {
     setFormFields({ ...formFields, [name]: value });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    dispatch({
-      type: USER_ACTION_TYPES.EMAIL_SIGN_IN_START,
-      payload: { email, password },
-    });
-
-    resetFormFields();
+  const validateForm = () => {
+    const newErrors = {};
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email format is invalid";
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 character";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const signInWithGoogle = () => {
-    dispatch({ type: USER_ACTION_TYPES.GOOGLE_SIGN_IN_START });
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!validateForm()) return;
+    dispatch(emailSignInStart(email, password));
+    resetFormFields();
   };
 
   return (
@@ -47,24 +58,26 @@ const SignInForm = () => {
           label="Email"
           type="email"
           required
-          onChange={handleChange}
           name="email"
           value={email}
+          onChange={handleChange}
         />
+        {errors.email && <p className="error">{errors.email}</p>}
         <FormInput
           label="Password"
           type="password"
           required
-          onChange={handleChange}
           name="password"
           value={password}
+          onChange={handleChange}
         />
+        {errors.password && <p className="error">{errors.password}</p>}
         <ButtonsContainer>
           <Button type="submit">Sign In</Button>
           <Button
             type="button"
             buttonType={BUTTON_TYPE_CLASSES.google}
-            onClick={signInWithGoogle}
+            onClick={() => dispatch(googleSignInStart())}
           >
             Google Sign In
           </Button>

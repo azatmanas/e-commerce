@@ -7,7 +7,7 @@ const Profile = () => {
     return <p>Please sign in to view your profile.</p>;
   }
   return (
-    <div>
+    <section>
       <h2>Profile</h2>
       <p>
         <strong>Name</strong>
@@ -17,7 +17,7 @@ const Profile = () => {
         <strong>Email</strong>
         {currentUser.email}
       </p>
-    </div>
+    </section>
   );
 };
 
