@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import FormInput from "../formInput/formInput";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button";
@@ -7,73 +6,57 @@ import {
   emailSignInStart,
   googleSignInStart,
 } from "../../store/user/user.action";
-
-const defaultFormFields = {
-  email: "",
-  password: "",
-};
+import { useFormAndValidation } from "../../hooks/useFormAndValidation";
+import ModalWithForm from "../ModalWithForm/ModalWithForm";
 
 const SignInForm = () => {
   const dispatch = useDispatch();
-  const [formFields, setFormFields] = useState(defaultFormFields);
-  const { email, password } = formFields;
-  const [errors, setErrors] = useState({});
 
-  const resetFormFields = () => setFormFields(defaultFormFields);
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormFields({ ...formFields, [name]: value });
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email format is invalid";
-    }
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 character";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const { email = "", password = "" } = values;
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!validateForm()) return;
+    if (!isValid) return;
+
     dispatch(emailSignInStart(email, password));
-    resetFormFields();
+    resetForm();
   };
 
   return (
     <SignUpContainer>
-      <h2>Already have an account?</h2>
-      <span>Sign in with your email and password</span>
-      <form onSubmit={handleSubmit}>
+      <ModalWithForm
+        title="Already have an account?"
+        subtitle="Sign in with your email and password"
+        onSubmit={handleSubmit}
+      >
         <FormInput
           label="Email"
           type="email"
-          required
           name="email"
+          required
           value={email}
           onChange={handleChange}
+          error={errors.email}
         />
-        {errors.email && <p className="error">{errors.email}</p>}
+
         <FormInput
           label="Password"
           type="password"
-          required
           name="password"
+          required
           value={password}
           onChange={handleChange}
+          error={errors.password}
         />
-        {errors.password && <p className="error">{errors.password}</p>}
+
         <ButtonsContainer>
-          <Button type="submit">Sign In</Button>
+          <Button type="submit" disabled={!isValid}>
+            Sign In
+          </Button>
+
           <Button
             type="button"
             buttonType={BUTTON_TYPE_CLASSES.google}
@@ -82,7 +65,7 @@ const SignInForm = () => {
             Google Sign In
           </Button>
         </ButtonsContainer>
-      </form>
+      </ModalWithForm>
     </SignUpContainer>
   );
 };
