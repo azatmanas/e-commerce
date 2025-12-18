@@ -41,6 +41,7 @@ const SignInForm = () => {
           onChange={handleChange}
           error={errors.email}
         />
+        {errors.email && <span className="error-message">{errors.email}</span>}
 
         <FormInput
           label="Password"
@@ -51,6 +52,9 @@ const SignInForm = () => {
           onChange={handleChange}
           error={errors.password}
         />
+        {errors.password && (
+          <span className="error-message">{errors.password}</span>
+        )}
 
         <ButtonsContainer>
           <Button type="submit" disabled={!isValid}>

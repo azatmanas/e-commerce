@@ -50,8 +50,10 @@ const SignUpForm = () => {
           onChange={handleChange}
           name="displayName"
           value={displayName}
-          error={errors.displayName}
         />
+        {errors.displayName && (
+          <span className="error-message">{errors.displayName}</span>
+        )}
         <FormInput
           label="Email"
           type="email"
@@ -59,8 +61,9 @@ const SignUpForm = () => {
           onChange={handleChange}
           name="email"
           value={email}
-          error={errors.email}
         />
+        {errors.email && <span className="error-message">{errors.email}</span>}
+
         <FormInput
           label="Password"
           type="password"
@@ -69,8 +72,11 @@ const SignUpForm = () => {
           onChange={handleChange}
           name="password"
           value={password}
-          error={errors.password}
         />
+        {errors.password && (
+          <span className="error-message">{errors.password}</span>
+        )}
+
         <FormInput
           label="Confirm Password"
           type="password"
@@ -79,8 +85,11 @@ const SignUpForm = () => {
           onChange={handleChange}
           name="confirmPassword"
           value={confirmPassword}
-          error={errors.confirmPassword}
         />
+        {errors.confirmPassword && (
+          <span className="error-message">{errors.confirmPassword}</span>
+        )}
+
         <ButtonsContainer>
           <Button type="submit" disabled={!isValid}>
             Sign Up
