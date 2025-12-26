@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentUser } from "./store/user/user.selector";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./component/routes/ProtectedRoute/ProtectedRoute";
+import PublicRoute from "./component/routes/PublicRoute/PublicRoute";
 import Spinner from "./component/spinner/spinner";
 import { checkUserSession } from "./store/user/user.action";
 import { GlobalStyle } from "./global.style";
@@ -25,6 +26,16 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="shop/*" element={<Shop />} />
           <Route path="auth" element={<Authentication />} />
+
+          <Route
+            path="auth"
+            element={
+              <PublicRoute user={currentUser}>
+                {" "}
+                <Authentication />{" "}
+              </PublicRoute>
+            }
+          />
 
           <Route
             path="checkout"

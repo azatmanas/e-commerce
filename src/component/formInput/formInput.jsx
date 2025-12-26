@@ -1,5 +1,5 @@
-import { FormInputLabel, Input, Group } from "./formInput.style";
-const FormInput = ({ label, ...otherProps }) => {
+import { FormInputLabel, Input, Group, ErrorMessage } from "./formInput.style";
+const FormInput = ({ label, error, ...otherProps }) => {
   return (
     <Group>
       <Input {...otherProps} />
@@ -14,6 +14,7 @@ const FormInput = ({ label, ...otherProps }) => {
           {label}
         </FormInputLabel>
       )}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </Group>
   );
 };

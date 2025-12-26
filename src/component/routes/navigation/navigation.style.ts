@@ -24,7 +24,7 @@ export const LogoContainer = styled(Link)`
   }
 `;
 
-export const NavLinks = styled.div`
+export const NavLinks = styled.nav`
   width: 50%;
   height: 100%;
   display: flex;

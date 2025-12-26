@@ -15,10 +15,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
 a {
   text-decoration: none;
   color: black;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
 }
+
+a:hover {
+  color: #555;
+  text-decoration: underline;
+}
+
 * {
   box-sizing: border-box;
 }

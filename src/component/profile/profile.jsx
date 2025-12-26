@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../store/user/user.selector";
-
+import { ProfileInfo } from "./profile.style";
 const Profile = () => {
   const currentUser = useSelector(selectCurrentUser);
   if (!currentUser) {
     return <p>Please sign in to view your profile.</p>;
   }
   return (
-    <section>
+    <ProfileInfo>
       <h2>Profile</h2>
       <p>
         <strong>Name</strong>
@@ -17,7 +17,7 @@ const Profile = () => {
         <strong>Email</strong>
         {currentUser.email}
       </p>
-    </section>
+    </ProfileInfo>
   );
 };
 
