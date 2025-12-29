@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { selectCurrentUser } from "../../store/user/user.selector";
 import { ProfileInfo } from "./profile.style";
+import { updateProfileStart } from "../../store/user/user.action";
 import FormInput from "../formInput/formInput";
 import Button from "../button/button";
 
