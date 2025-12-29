@@ -14,6 +14,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   collection,
   writeBatch,
   query,
@@ -83,6 +84,19 @@ export const createUserDocumentFromAuth = async (
 
   // IMPORTANT: return the DocumentSnapshot so callers can call .data()
   return await getDoc(userDocRef);
+};
+
+export const updateUserProfileDocument = async (userId, data) => {
+  if (!userId) return;
+
+  const userDocRef = doc(db, "users", userId);
+  await updateDoc(userDocRef, {
+    displayName: data.displayName,
+    email: data.email,
+  });
+
+  const updateSnapShot = await getDoc(userDocRef);
+  return updateSnapShot;
 };
 
 export const signOutUser = async () => await signOut(auth);

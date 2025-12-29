@@ -7,6 +7,8 @@ import {
   signUpFailed,
   signOutSuccess,
   signOutFailed,
+  updateProfileSuccess,
+  updateProfileFailed,
 } from "./user.action";
 
 import {
@@ -16,8 +18,30 @@ import {
   createUserDocumentFromAuth,
   signOutUser,
   getCurrentUser,
+  updateUserProfileDocument,
 } from "../../utils/firebase/firebase.utils";
 
+import { select } from "redux-saga/effects";
+import { selectCurrentUser } from "./user.selector";
+
+export function* updateProfile({ payload }) {
+  try {
+    const currentUser = yield* select(selectCurrentUser);
+    const updatedSnapshot = yield* call(
+      updateUserProfileDocument,
+      currentUser.id,
+      payload
+    );
+    yield* put(
+      updateProfileSuccess({
+        id: updatedSnapshot.id,
+        ...updatedSnapshot.data(),
+      })
+    );
+  } catch (error) {
+    yield* put(updateProfileFailed(error));
+  }
+}
 // --- HELPERS ---
 export function* getSnapshotFromUserAuth(userAuth, additionalDetails) {
   try {
@@ -126,6 +150,10 @@ export function* onSignOutStart() {
   yield* takeLatest(USER_ACTION_TYPES.SIGN_OUT_START, signOut);
 }
 
+export function* onUpdateProfileStart() {
+  yield* takeLatest(USER_ACTION_TYPES.UPDATE_PROFILE_START, updateProfile);
+}
+
 // --- ROOT SAGA ---
 export function* userSagas() {
   yield* all([
@@ -135,5 +163,6 @@ export function* userSagas() {
     call(onSignUpStart),
     call(onSignUpSuccess),
     call(onSignOutStart),
+    call(onUpdateProfileStart),
   ]);
 }

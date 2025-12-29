@@ -51,3 +51,14 @@ export const signOutSuccess = withMatcher(() =>
 export const signOutFailed = withMatcher((error) =>
   createAction(USER_ACTION_TYPES.SIGN_OUT_FAILED, error)
 );
+
+export const updateProfileStart = withMatcher(() =>
+  createAction(USER_ACTION_TYPES.UPDATE_PROFILE_START)
+);
+
+export const updateProfileSuccess = withMatcher(() =>
+  createAction(USER_ACTION_TYPES.UPDATE_PROFILE_SUCCESS)
+);
+export const updateProfileFailed = withMatcher((error) =>
+  createAction(USER_ACTION_TYPES.UPDATE_PROFILE_FAILED, error)
+);

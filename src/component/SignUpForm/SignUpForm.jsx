@@ -73,9 +73,6 @@ const SignUpForm = () => {
           name="password"
           value={password}
         />
-        {errors.password && (
-          <span className="error-message">{errors.password}</span>
-        )}
 
         <FormInput
           label="Confirm Password"

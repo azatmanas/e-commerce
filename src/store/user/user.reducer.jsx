@@ -4,6 +4,8 @@ import {
   signOutFailed,
   signInSuccess,
   signOutSuccess,
+  updateProfileSuccess,
+  updateProfileFailed,
 } from "./user.action";
 
 const INITIAL_STATE = {
@@ -17,6 +19,10 @@ export const userReducer = (state = INITIAL_STATE, action) => {
     return { ...state, currentUser: action.payload };
   }
 
+  if (updateProfileSuccess.match(action)) {
+    return { ...state, currentUser: action.payload };
+  }
+
   if (signOutSuccess.match(action)) {
     return { ...state, currentUser: null };
   }
@@ -24,7 +30,8 @@ export const userReducer = (state = INITIAL_STATE, action) => {
   if (
     signInFailed.match(action) ||
     signOutFailed.match(action) ||
-    signUpFailed.match(action)
+    signUpFailed.match(action) ||
+    updateProfileFailed.match(action)
   ) {
     return { ...state, error: action.payload };
   }
