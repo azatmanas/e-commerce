@@ -1,0 +1,168 @@
+import { takeLatest, all, call, put } from "typed-redux-saga/macro";
+import { USER_ACTION_TYPES } from "./user.types";
+import {
+  signInSuccess,
+  signInFailed,
+  signUpSuccess,
+  signUpFailed,
+  signOutSuccess,
+  signOutFailed,
+  updateProfileSuccess,
+  updateProfileFailed,
+} from "./user.action";
+
+import {
+  signInWithGooglePopup,
+  createAuthUserWithEmailAndPassword,
+  signInAuthUserWithEmailAndPassword,
+  createUserDocumentFromAuth,
+  signOutUser,
+  getCurrentUser,
+  updateUserProfileDocument,
+} from "../../utils/firebase/firebase.utils";
+
+import { select } from "redux-saga/effects";
+import { selectCurrentUser } from "./user.selector";
+
+export function* updateProfile({ payload }) {
+  try {
+    const currentUser = yield* select(selectCurrentUser);
+    const updatedSnapshot = yield* call(
+      updateUserProfileDocument,
+      currentUser.id,
+      payload
+    );
+    yield* put(
+      updateProfileSuccess({
+        id: updatedSnapshot.id,
+        ...updatedSnapshot.data(),
+      })
+    );
+  } catch (error) {
+    yield* put(updateProfileFailed(error));
+  }
+}
+// --- HELPERS ---
+export function* getSnapshotFromUserAuth(userAuth, additionalDetails) {
+  try {
+    const userSnapshot = yield* call(
+      createUserDocumentFromAuth,
+      userAuth,
+      additionalDetails
+    );
+    if (userSnapshot) {
+      yield* put(
+        signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
+      );
+    }
+  } catch (error) {
+    yield* put(signInFailed(error));
+  }
+}
+
+// --- SIGN-IN WITH GOOGLE ---
+export function* signInWithGoogle() {
+  try {
+    const { user } = yield* call(signInWithGooglePopup);
+    yield* call(getSnapshotFromUserAuth, user);
+  } catch (error) {
+    yield* put(signInFailed(error));
+  }
+}
+
+// --- SIGN-IN WITH EMAIL/PASSWORD ---
+export function* signInWithEmail({ payload: { email, password } }) {
+  try {
+    const { user } = yield* call(
+      signInAuthUserWithEmailAndPassword,
+      email,
+      password
+    );
+    yield* call(getSnapshotFromUserAuth, user);
+  } catch (error) {
+    yield* put(signInFailed(error));
+  }
+}
+
+// --- CHECK USER SESSION ---
+export function* isUserAuthenticated() {
+  try {
+    const userAuth = yield* call(getCurrentUser);
+    if (!userAuth) return;
+    yield* call(getSnapshotFromUserAuth, userAuth);
+  } catch (error) {
+    yield* put(signInFailed(error));
+  }
+}
+
+// --- SIGN-UP ---
+export function* signUp({ payload: { email, password, displayName } }) {
+  try {
+    const { user } = yield* call(
+      createAuthUserWithEmailAndPassword,
+      email,
+      password
+    );
+    yield* call(createUserDocumentFromAuth, user, { displayName });
+    yield* put(signUpSuccess(user, { displayName }));
+  } catch (error) {
+    yield* put(signUpFailed(error));
+  }
+}
+
+// --- SIGN-IN AFTER SIGN-UP ---
+export function* signInAfterSignUp({ payload: { user, additionalDetails } }) {
+  yield* call(getSnapshotFromUserAuth, user, additionalDetails);
+}
+
+// --- SIGN-OUT ---
+export function* signOut() {
+  try {
+    yield* call(signOutUser);
+    yield* put(signOutSuccess());
+  } catch (error) {
+    yield* put(signOutFailed(error));
+  }
+}
+
+// --- LISTENERS ---
+export function* onGoogleSignInStart() {
+  yield* takeLatest(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START, signInWithGoogle);
+}
+
+export function* onEmailSignInStart() {
+  yield* takeLatest(USER_ACTION_TYPES.EMAIL_SIGN_IN_START, signInWithEmail);
+}
+
+export function* onCheckUserSession() {
+  yield* takeLatest(USER_ACTION_TYPES.CHECK_USER_SESSION, isUserAuthenticated);
+}
+
+export function* onSignUpStart() {
+  yield* takeLatest(USER_ACTION_TYPES.SIGN_UP_START, signUp);
+}
+
+export function* onSignUpSuccess() {
+  yield* takeLatest(USER_ACTION_TYPES.SIGN_UP_SUCCESS, signInAfterSignUp);
+}
+
+export function* onSignOutStart() {
+  yield* takeLatest(USER_ACTION_TYPES.SIGN_OUT_START, signOut);
+}
+
+export function* onUpdateProfileStart() {
+  yield* takeLatest(USER_ACTION_TYPES.UPDATE_PROFILE_START, updateProfile);
+}
+
+// --- ROOT SAGA ---
+export function* userSagas() {
+  yield* all([
+    call(onCheckUserSession),
+    call(onGoogleSignInStart),
+    call(onEmailSignInStart),
+    call(onSignUpStart),
+    call(onSignUpSuccess),
+    call(onSignOutStart),
+    call(onUpdateProfileStart),
+  ]);
+}

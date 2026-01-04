@@ -1,25 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, Suspense } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentUser } from "./store/user/user.selector";
+import { Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./component/routes/ProtectedRoute/ProtectedRoute";
+import PublicRoute from "./component/routes/PublicRoute/PublicRoute";
+import Spinner from "./component/spinner/spinner";
+import { checkUserSession } from "./store/user/user.action";
+import { GlobalStyle } from "./global.style";
+import { Home, Shop, Checkout, Navigation, Authentication } from "./lazy";
+import Profile from "./component/profile/profile";
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(selectCurrentUser); // ✅ fixed casing
+
+  useEffect(() => {
+    dispatch(checkUserSession());
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Suspense fallback={<Spinner />}>
+      <GlobalStyle />
+      <Routes>
+        <Route path="/" element={<Navigation />}>
+          <Route index element={<Home />} />
+          <Route path="shop/*" element={<Shop />} />
+          <Route path="auth" element={<Authentication />} />
+
+          <Route
+            path="auth"
+            element={
+              <PublicRoute user={currentUser}>
+                {" "}
+                <Authentication />{" "}
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="checkout"
+            element={
+              <ProtectedRoute user={currentUser}>
+                <Checkout />{" "}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute user={currentUser}>
+                <Profile />{" "}
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+      </Routes>
+    </Suspense>
   );
-}
+};
 
 export default App;
